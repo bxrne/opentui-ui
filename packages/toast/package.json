@@ -1,0 +1,70 @@
+{
+  "name": "@opentui-ui/toast",
+  "version": "0.0.1",
+  "description": "A beautiful toast library for terminal UIs built on OpenTUI",
+  "author": "Matt Simpson",
+  "license": "MIT",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msmps/opentui-ui.git",
+    "directory": "packages/toast"
+  },
+  "type": "module",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./themes": {
+      "types": "./dist/themes.d.mts",
+      "import": "./dist/themes.mjs"
+    },
+    "./icons": {
+      "types": "./dist/icons.d.mts",
+      "import": "./dist/icons.mjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.mts",
+      "import": "./dist/react.mjs"
+    }
+  },
+  "bugs": {
+    "url": "https://github.com/msmps/opentui-ui/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/msmps/opentui-ui#readme",
+  "keywords": [
+    "toast",
+    "notification",
+    "tui",
+    "terminal",
+    "cli",
+    "opentui",
+    "sonner"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@opentui/core": "^0.1.63",
+    "@opentui/react": "^0.1.63",
+    "@types/bun": "latest",
+    "tsdown": "^0.18.2",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "@opentui/core": "^0.1.63",
+    "@opentui/react": "^0.1.63"
+  },
+  "peerDependenciesMeta": {
+    "@opentui/react": {
+      "optional": true
+    }
+  }
+}

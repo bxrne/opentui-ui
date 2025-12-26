@@ -1,0 +1,29 @@
+{
+  "name": "opentui-ui",
+  "type": "module",
+  "private": true,
+  "packageManager": "bun@1.2.21",
+  "workspaces": [
+    "packages/*"
+  ],
+  "keywords": [
+    "ui",
+    "opentui",
+    "opentui-ui"
+  ],
+  "scripts": {
+    "build": "bun run --filter '*' build",
+    "clean": "bun run --filter '*' clean",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "bun run build && changeset publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.10",
+    "@changesets/cli": "^2.29.4",
+    "@types/bun": "latest",
+    "typescript": "^5"
+  }
+}
