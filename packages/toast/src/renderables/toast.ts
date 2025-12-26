@@ -127,6 +127,8 @@ export class ToastRenderable extends BoxRenderable {
       paddingRight: padding.right,
       paddingBottom: padding.bottom,
       paddingLeft: padding.left,
+      onMouseOver: () => this.pause(),
+      onMouseOut: () => this.resume(),
     });
 
     this._toast = options.toast;
