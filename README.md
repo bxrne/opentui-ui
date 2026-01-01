@@ -4,9 +4,10 @@ UI component library for terminal applications built on [@opentui/core](https://
 
 ## Packages
 
-| Package                               | Description                         | npm                                                                                                       |
-| ------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| [@opentui-ui/toast](./packages/toast) | Sonner-inspired toast notifications | [![npm](https://img.shields.io/npm/v/@opentui-ui/toast)](https://www.npmjs.com/package/@opentui-ui/toast) |
+| Package                                 | Description                         | npm                                                                                                         |
+| --------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| [@opentui-ui/dialog](./packages/dialog) | Dialogs made easy                   | [![npm](https://img.shields.io/npm/v/@opentui-ui/dialog)](https://www.npmjs.com/package/@opentui-ui/dialog) |
+| [@opentui-ui/toast](./packages/toast)   | Sonner-inspired toast notifications | [![npm](https://img.shields.io/npm/v/@opentui-ui/toast)](https://www.npmjs.com/package/@opentui-ui/toast)   |
 
 ## Installation
 
