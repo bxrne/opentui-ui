@@ -1,7 +1,85 @@
+import {
+  mergeStyles,
+  normalizeOpacity,
+  resolvePadding,
+} from "@opentui-ui/utils";
 import { DEFAULT_SIZE, DEFAULT_SIZES, FULL_SIZE_OFFSET } from "../constants";
-import type { DialogContainerOptions, DialogSize } from "../types";
+import {
+  DEFAULT_BACKDROP_OPACITY,
+  DEFAULT_PADDING,
+  DEFAULT_STYLE,
+} from "../themes";
+import type {
+  Dialog,
+  DialogBackdropMode,
+  DialogContainerOptions,
+  DialogSize,
+  DialogStyle,
+} from "../types";
 
-/** Get the width in columns for a dialog size preset. */
+export interface ComputeDialogStyleInput {
+  dialog: Dialog;
+  containerOptions?: DialogContainerOptions;
+  isTopmost: boolean;
+}
+
+export interface ComputedDialogStyle extends DialogStyle {
+  resolvedPadding: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+}
+
+export function computeDialogStyle(
+  input: ComputeDialogStyleInput,
+): ComputedDialogStyle {
+  const { dialog, containerOptions, isTopmost } = input;
+
+  const isUnstyled =
+    dialog.unstyled ??
+    containerOptions?.dialogOptions?.unstyled ??
+    containerOptions?.unstyled ??
+    false;
+
+  const backdropMode: DialogBackdropMode =
+    dialog.backdropMode ??
+    containerOptions?.dialogOptions?.backdropMode ??
+    containerOptions?.backdropMode ??
+    "top-only";
+
+  const baseStyle = isUnstyled ? {} : DEFAULT_STYLE;
+
+  const computed = mergeStyles(
+    baseStyle,
+    containerOptions?.dialogOptions?.style,
+    dialog.style,
+  );
+
+  if (backdropMode === "top-only" && !isTopmost) {
+    computed.backdropOpacity = 0;
+  }
+
+  const backdropOpacity = normalizeOpacity(
+    computed.backdropOpacity,
+    isUnstyled ? 0 : DEFAULT_BACKDROP_OPACITY,
+    "@opentui-ui/dialog",
+  );
+
+  const defaultPadding = isUnstyled
+    ? { top: 0, right: 0, bottom: 0, left: 0 }
+    : DEFAULT_PADDING;
+
+  const resolvedPadding = resolvePadding(computed, defaultPadding);
+
+  return {
+    ...computed,
+    backdropOpacity,
+    resolvedPadding,
+  };
+}
+
 export function getDialogWidth(
   size: DialogSize | undefined,
   containerOptions?: DialogContainerOptions,

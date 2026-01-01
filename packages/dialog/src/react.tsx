@@ -287,11 +287,14 @@ export function DialogProvider(props: DialogProviderProps) {
 }
 
 export { DialogManager } from "./manager";
+export { type DialogTheme, themes } from "./themes";
 export type {
   Dialog,
+  DialogBackdropMode,
   DialogContainerOptions,
   DialogContentFactory,
   DialogId,
+  DialogOptions,
   DialogShowOptions,
   DialogSize,
   DialogStyle,

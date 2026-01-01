@@ -4,18 +4,13 @@ import {
   type RenderContext,
   RGBA,
 } from "@opentui/core";
+import { DEFERRED_KEY } from "../constants";
+import type { Dialog, DialogContainerOptions } from "../types";
 import {
-  mergeStyles,
-  normalizeOpacity,
-  resolvePadding,
-} from "@opentui-ui/utils";
-import {
-  DEFAULT_DIALOG_OPTIONS,
-  DEFAULT_DIALOG_STYLE,
-  DEFERRED_KEY,
-} from "../constants";
-import type { Dialog, DialogContainerOptions, DialogStyle } from "../types";
-import { getDialogWidth } from "../utils";
+  type ComputedDialogStyle,
+  computeDialogStyle,
+  getDialogWidth,
+} from "../utils";
 
 interface DialogWithDeferred extends Dialog {
   [DEFERRED_KEY]?: boolean;
@@ -24,32 +19,33 @@ interface DialogWithDeferred extends Dialog {
 export interface DialogRenderableOptions {
   dialog: Dialog;
   containerOptions?: DialogContainerOptions;
+  isTopmost: boolean;
   onRemove?: (dialog: Dialog) => void;
   onBackdropClick?: () => void;
 }
 
 export class DialogRenderable extends BoxRenderable {
   private _dialog: Dialog;
-  private _computedStyle: DialogStyle;
+  private _computedStyle: ComputedDialogStyle;
   private _containerOptions?: DialogContainerOptions;
   private __contentBox: BoxRenderable;
   private _onRemove?: (dialog: Dialog) => void;
   private _onBackdropClick?: () => void;
   private _closed: boolean = false;
   private _revealed: boolean = false;
+  private _isTopmost: boolean;
 
   constructor(ctx: RenderContext, options: DialogRenderableOptions) {
-    const computedStyle = mergeStyles(
-      DEFAULT_DIALOG_OPTIONS.style,
-      options.containerOptions?.dialogOptions?.style,
-      options.dialog.style,
-    );
+    const computedStyle = computeDialogStyle({
+      dialog: options.dialog,
+      containerOptions: options.containerOptions,
+      isTopmost: options.isTopmost,
+    });
 
-    const backdropOpacity = normalizeOpacity(
-      computedStyle.backdropOpacity,
-      DEFAULT_DIALOG_STYLE.backdropOpacity,
-      "@opentui-ui/dialog",
-    );
+    const backdropOpacity =
+      typeof computedStyle.backdropOpacity === "number"
+        ? computedStyle.backdropOpacity
+        : 0;
 
     const backdropColor = computedStyle.backdropColor
       ? parseColor(computedStyle.backdropColor)
@@ -80,6 +76,7 @@ export class DialogRenderable extends BoxRenderable {
     this._onRemove = options.onRemove;
     this._onBackdropClick = options.onBackdropClick;
     this._revealed = !isDeferred;
+    this._isTopmost = options.isTopmost;
 
     this.__contentBox = this.createContentPanel();
     this.add(this.__contentBox);
@@ -88,12 +85,7 @@ export class DialogRenderable extends BoxRenderable {
 
   private createContentPanel(): BoxRenderable {
     const style = this._computedStyle;
-    const padding = resolvePadding(style, {
-      top: 1,
-      right: 2,
-      bottom: 1,
-      left: 2,
-    });
+    const padding = style.resolvedPadding;
 
     const dialogWidth = getDialogWidth(
       this._dialog.size,
@@ -159,6 +151,33 @@ export class DialogRenderable extends BoxRenderable {
     if (this._dialog.closeOnClickOutside !== false) {
       this._onBackdropClick?.();
     }
+  }
+
+  public setIsTopmost(isTopmost: boolean): void {
+    if (this._isTopmost === isTopmost) return;
+    this._isTopmost = isTopmost;
+
+    const newStyle = computeDialogStyle({
+      dialog: this._dialog,
+      containerOptions: this._containerOptions,
+      isTopmost,
+    });
+
+    this._computedStyle = newStyle;
+
+    const backdropOpacity =
+      typeof newStyle.backdropOpacity === "number"
+        ? newStyle.backdropOpacity
+        : 0;
+
+    const backdropColor = newStyle.backdropColor
+      ? parseColor(newStyle.backdropColor)
+      : RGBA.fromInts(0, 0, 0, backdropOpacity / 255);
+
+    backdropColor.a = backdropOpacity / 255;
+
+    this.backgroundColor = backdropColor;
+    this.requestRender();
   }
 
   public updateDimensions(width: number): void {

@@ -245,6 +245,8 @@ export function DialogProvider(props: ParentProps<DialogProviderProps>) {
     dialogOptions: props.dialogOptions,
     sizePresets: props.sizePresets,
     closeOnEscape: props.closeOnEscape,
+    unstyled: props.unstyled,
+    backdropMode: props.backdropMode,
   });
   renderer.root.add(container);
 
@@ -353,11 +355,14 @@ export function DialogProvider(props: ParentProps<DialogProviderProps>) {
 }
 
 export { DialogManager } from "./manager";
+export { type DialogTheme, themes } from "./themes";
 export type {
   Dialog,
+  DialogBackdropMode,
   DialogContainerOptions,
   DialogContentFactory,
   DialogId,
+  DialogOptions,
   DialogShowOptions,
   DialogSize,
   DialogStyle,

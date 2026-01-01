@@ -18,6 +18,10 @@
       "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs"
     },
+    "./themes": {
+      "types": "./dist/themes.d.mts",
+      "import": "./dist/themes.mjs"
+    },
     "./react": {
       "types": "./dist/react.d.mts",
       "import": "./dist/react.mjs"

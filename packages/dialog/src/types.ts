@@ -28,11 +28,15 @@ export interface DialogStyle {
 /** Factory function that creates dialog content from a RenderContext. */
 export type DialogContentFactory = (ctx: RenderContext) => Renderable;
 
+export type DialogBackdropMode = "per-dialog" | "top-only";
+
 export interface Dialog {
   id: DialogId;
   content: DialogContentFactory;
   size?: DialogSize;
   style?: DialogStyle;
+  unstyled?: boolean;
+  backdropMode?: DialogBackdropMode;
   /** @default true */
   closeOnClickOutside?: boolean;
   onClose?: () => void;
@@ -51,6 +55,8 @@ export interface DialogShowOptions extends Omit<Dialog, "id"> {
 
 export interface DialogOptions {
   style?: DialogStyle;
+  unstyled?: boolean;
+  backdropMode?: DialogBackdropMode;
 }
 
 export interface DialogContainerOptions {
@@ -60,6 +66,9 @@ export interface DialogContainerOptions {
   sizePresets?: Partial<Record<DialogSize, number>>;
   /** @default true */
   closeOnEscape?: boolean;
+  unstyled?: boolean;
+  /** @default "top-only" */
+  backdropMode?: DialogBackdropMode;
 }
 
 export function isDialogToClose(

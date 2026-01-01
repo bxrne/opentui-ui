@@ -1,1 +1,6 @@
-export { getDialogWidth } from "./style";
+export {
+  type ComputeDialogStyleInput,
+  type ComputedDialogStyle,
+  computeDialogStyle,
+  getDialogWidth,
+} from "./style";

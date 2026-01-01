@@ -12,9 +12,16 @@ export {
   DialogRenderable,
   type DialogRenderableOptions,
 } from "./renderables";
-
+export {
+  DEFAULT_BACKDROP_OPACITY,
+  DEFAULT_PADDING,
+  DEFAULT_STYLE,
+  type DialogTheme,
+  themes,
+} from "./themes";
 export type {
   Dialog,
+  DialogBackdropMode,
   DialogContainerOptions,
   DialogContentFactory,
   DialogId,
@@ -24,7 +31,10 @@ export type {
   DialogStyle,
   DialogToClose,
 } from "./types";
-
 export { isDialogToClose } from "./types";
-
-export { getDialogWidth } from "./utils";
+export {
+  type ComputeDialogStyleInput,
+  type ComputedDialogStyle,
+  computeDialogStyle,
+  getDialogWidth,
+} from "./utils";

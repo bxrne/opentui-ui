@@ -122,16 +122,37 @@ export class DialogContainerRenderable extends BoxRenderable {
       this.removeDialog(dialog.id);
     }
 
+    const isTopmost = this.isTopmostDialog(dialog.id);
+
     const dialogRenderable = new DialogRenderable(this.ctx, {
       dialog,
       containerOptions: this._options,
+      isTopmost,
       onRemove: (d) => this.handleDialogRemoved(d),
       onBackdropClick: () => this._manager.close(dialog.id),
     });
 
     this._dialogRenderables.set(dialog.id, dialogRenderable);
     this.add(dialogRenderable);
+
+    this.updateTopmostStates();
     this.requestRender();
+  }
+
+  private isTopmostDialog(dialogId: DialogId): boolean {
+    const dialogs = this._manager.getDialogs();
+    if (dialogs.length === 0) return true;
+    return dialogs[dialogs.length - 1]?.id === dialogId;
+  }
+
+  private updateTopmostStates(): void {
+    const dialogs = this._manager.getDialogs();
+    const topmostId =
+      dialogs.length > 0 ? dialogs[dialogs.length - 1]?.id : undefined;
+
+    for (const [id, renderable] of this._dialogRenderables) {
+      renderable.setIsTopmost(id === topmostId);
+    }
   }
 
   private removeDialog(id: DialogId): void {
@@ -147,6 +168,7 @@ export class DialogContainerRenderable extends BoxRenderable {
       this._dialogRenderables.delete(dialog.id);
       this.remove(renderable.id);
       renderable.destroy();
+      this.updateTopmostStates();
       this.requestRender();
     }
   }

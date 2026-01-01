@@ -13,12 +13,14 @@
 
 ## Features
 
-- Configurable backdrop opacity and color
+- Lightweight default styling (minimal theme)
 - Size presets (small, medium, large, full)
 - Click-to-close backdrop (default: enabled)
 - ESC key to close
 - Dialog stack support (multiple dialogs)
 - Focus management (saves/restores focus on open/close)
+- Theme presets (minimal, classic, unstyled, danger)
+- Backdrop stacking modes (prevent compounded dimming)
 - React and Solid.js integrations
 
 ## Installation
@@ -64,6 +66,83 @@ manager.getDialogs();   // readonly Dialog[]
 manager.getTopDialog(); // Dialog | undefined
 ```
 
+## Default Styling
+
+Out of the box, dialogs use the **minimal** theme:
+
+- Lighter backdrop (35% opacity)
+- No borders
+- Tighter padding (1 cell all around)
+- `top-only` backdrop mode (only topmost dialog shows backdrop)
+
+This provides a clean, unobtrusive appearance while still being usable immediately.
+
+## Themes
+
+Theme presets provide alternative visual styles. Import from `@opentui-ui/dialog/themes`:
+
+```ts
+import { DialogContainerRenderable, DialogManager } from "@opentui-ui/dialog";
+import { themes } from "@opentui-ui/dialog/themes";
+
+const container = new DialogContainerRenderable(renderer, {
+  manager,
+  ...themes.classic,
+});
+```
+
+| Theme | Description |
+| ----- | ----------- |
+| `minimal` | Lighter backdrop (35%), no borders, tighter padding (default) |
+| `classic` | Traditional style with heavier backdrop (59%), wider padding |
+| `unstyled` | No backdrop, no background, no border, no padding |
+| `danger` | Red-accented border, darker backdrop for destructive actions |
+
+Customize a theme:
+
+```ts
+const container = new DialogContainerRenderable(renderer, {
+  manager,
+  ...themes.classic,
+  size: "large", // Override specific options
+});
+```
+
+## Backdrop Modes
+
+When stacking multiple dialogs, backdrops can compound and make the screen too dark. Use `backdropMode` to control this:
+
+```ts
+const container = new DialogContainerRenderable(renderer, {
+  manager,
+  backdropMode: "per-dialog", // Each dialog renders its own backdrop
+});
+```
+
+| Mode | Description |
+| ---- | ----------- |
+| `top-only` | Only the topmost dialog renders a backdrop (default) |
+| `per-dialog` | Each dialog renders its own backdrop |
+
+## Unstyled Mode
+
+For full control over dialog styling, use `unstyled: true`. This disables all default styles (backdrop, background, border, padding):
+
+```ts
+const container = new DialogContainerRenderable(renderer, {
+  manager,
+  unstyled: true,
+  dialogOptions: {
+    style: {
+      // Add your own styles
+      backgroundColor: "#262626",
+      border: true,
+      borderColor: "#525252",
+    },
+  },
+});
+```
+
 ## API Reference
 
 ### `DialogManager`
@@ -76,6 +155,8 @@ const id = manager.show({
   content: (ctx) => new TextRenderable(ctx, { content: "Hello" }),
   size?: "small" | "medium" | "large" | "full",
   style?: DialogStyle,
+  unstyled?: boolean,
+  backdropMode?: "per-dialog" | "top-only",
   closeOnClickOutside?: boolean, // default: true
   onClose?: () => void,
   onOpen?: () => void,
@@ -112,6 +193,8 @@ const container = new DialogContainerRenderable(renderer, {
   dialogOptions: {
     // Default options for all dialogs
     style: DialogStyle,
+    unstyled: boolean,
+    backdropMode: "per-dialog" | "top-only",
   },
   sizePresets: {
     // Custom size presets (terminal columns)
@@ -120,6 +203,8 @@ const container = new DialogContainerRenderable(renderer, {
     large: 80,
   },
   closeOnEscape: true, // ESC key closes top dialog (default: true)
+  unstyled: false, // Disable default styles (default: false)
+  backdropMode: "top-only", // Backdrop stacking behavior (default)
 });
 
 // Add to render tree
@@ -132,13 +217,13 @@ renderer.root.add(container);
 interface DialogStyle {
   // Backdrop
   backdropColor?: string; // Default: "#000000"
-  backdropOpacity?: number | string; // 0-1, or "50%" (default: ~0.59)
+  backdropOpacity?: number | string; // 0-1, or "50%" (default: 0.35)
 
   // Content panel
-  backgroundColor?: string;
+  backgroundColor?: string; // Default: "#262626"
   borderColor?: string;
   borderStyle?: BorderStyle;
-  border?: boolean;
+  border?: boolean; // Default: false
 
   // Sizing
   width?: number | string;
@@ -146,7 +231,7 @@ interface DialogStyle {
   minWidth?: number;
   maxHeight?: number;
 
-  // Padding
+  // Padding (default: 1 cell all around)
   padding?: number;
   paddingX?: number;
   paddingY?: number;
@@ -204,10 +289,22 @@ import {
 
 function App() {
   return (
-    <DialogProvider
-      size="medium"
-      dialogOptions={{ style: { backgroundColor: "#1a1a1a" } }}
-    >
+    <DialogProvider size="medium">
+      <MyContent />
+    </DialogProvider>
+  );
+}
+```
+
+### Using Themes with React/Solid
+
+```tsx
+import { DialogProvider } from "@opentui-ui/dialog/react";
+import { themes } from "@opentui-ui/dialog/themes";
+
+function App() {
+  return (
+    <DialogProvider {...themes.classic}>
       <MyContent />
     </DialogProvider>
   );
@@ -227,6 +324,8 @@ dialog.show({
   content: () => <MyContent />,  // Solid: function returning JSX
   size: "medium",
   style: { backgroundColor: "#1a1a1a" },
+  unstyled: false,
+  backdropMode: "top-only",
   closeOnClickOutside: true,
   onClose: () => {},
   onOpen: () => {},
@@ -261,11 +360,11 @@ const topDialog = useDialogState((s) => s.topDialog);
 > Always select primitives not new objects.
 
 ```ts
-// ✅ Good - selects primitives
+// Good - selects primitives
 const isOpen = useDialogState((s) => s.isOpen);
 const count = useDialogState((s) => s.count);
 
-// ❌ Bad - creates new object every time, always re-renders
+// Bad - creates new object every time, always re-renders
 const state = useDialogState((s) => ({ isOpen: s.isOpen, count: s.count }));
 ```
 
@@ -325,7 +424,10 @@ Full TypeScript support with exported types:
 
 ```ts
 import type {
+  ComputedDialogStyle,
+  ComputeDialogStyleInput,
   Dialog,
+  DialogBackdropMode,
   DialogContainerOptions,
   DialogContentFactory,
   DialogId,
@@ -333,11 +435,21 @@ import type {
   DialogShowOptions,
   DialogSize,
   DialogStyle,
+  DialogTheme,
   DialogToClose,
 } from "@opentui-ui/dialog";
 
 // Type guard
 import { isDialogToClose } from "@opentui-ui/dialog";
+
+// Themes and default style constants
+import {
+  DEFAULT_BACKDROP_OPACITY,
+  DEFAULT_PADDING,
+  DEFAULT_STYLE,
+  themes,
+  type DialogTheme,
+} from "@opentui-ui/dialog/themes";
 ```
 
 ## License
