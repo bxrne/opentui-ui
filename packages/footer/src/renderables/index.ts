@@ -1,0 +1,2 @@
+export { FooterRenderable } from "./footer";
+

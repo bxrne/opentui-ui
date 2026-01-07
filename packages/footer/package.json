@@ -1,0 +1,49 @@
+{
+  "name": "@opentui-ui/footer",
+  "version": "0.0.1",
+  "description": "A footer component for terminal UIs built on OpenTUI",
+  "author": "Matt Simpson",
+  "license": "MIT",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msmps/opentui-ui.git",
+    "directory": "packages/footer"
+  },
+  "type": "module",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "bugs": {
+    "url": "https://github.com/msmps/opentui-ui/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/msmps/opentui-ui#readme",
+  "keywords": [
+    "footer",
+    "tui",
+    "terminal",
+    "cli",
+    "opentui"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@opentui/core": "^0.1.63",
+    "@types/bun": "latest",
+    "tsdown": "^0.18.2",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "@opentui/core": "^0.1.63"
+  }
+}
